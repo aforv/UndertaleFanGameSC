@@ -1,0 +1,267 @@
+/// Create Code
+
+charspd = 3
+encounter=  0
+if ((x % 3) == 2)
+    x += 1
+if ((x % 3) == 1)
+    x -= 1
+if ((y % 3) == 2)
+    y += 1
+if ((y % 3) == 1)
+    y -= 1
+up = 0
+down = 0
+left = 0
+right = 0
+try_up = 0
+try_down = 0
+try_left = 0
+try_right = 0
+moving = false
+global.interact = 0
+global.encounter = 0
+global.facing = 0
+global.phasing = 0
+cutscene = false
+movement = 0
+turned = 0
+oldx = x
+oldy = y
+image_speed = 0
+lastfacing = 0
+ds = spr_maincharad
+us = spr_maincharau
+ls = spr_maincharal
+rs = spr_maincharar
+
+if (global.facing == 0)
+    sprite_index = ds
+if (global.facing == 1)
+    sprite_index = us
+if (global.facing == 2)
+    sprite_index = ls
+if (global.facing == 3)
+    sprite_index = rs
+
+/// Step
+
+if (global.facing == 0)
+    sprite_index = ds
+if (global.facing == 1)
+    sprite_index = us
+if (global.facing == 2)
+    sprite_index = ls
+if (global.facing == 3)
+    sprite_index = rs
+if (collision_point((bbox_left - 3), (bbox_top - 3), obj_solidparent, 0, 1) == -4)
+    crumpet = 1
+else
+    crumpet = 2
+strumpet = bbox_top
+trumpet = bbox_left
+if global.interact >=! 1 {
+        if down{
+            if (movement == 1)
+            {
+                if (up == 0)
+                {
+                    turned = 1
+                    y += charspd
+                    if (moving != true)
+                        image_index = 1
+                    moving = true
+                    image_speed = 0.2
+                    if (right && global.facing == 3)
+                        turned = 0
+                    if (left && global.facing == 2)
+                        turned = 0
+                    if (turned == 1)
+                        global.facing = 0
+                }
+            }
+        }
+        
+        if up{
+            if (movement == 1)
+            {
+                turned = 1
+                y -= charspd
+                if (moving != true)
+                    image_index = 1
+                moving = true
+                image_speed = 0.2
+                if (right && global.facing == 3)
+                    turned = 0
+                if (left && global.facing == 2)
+                    turned = 0
+                if (turned == 1)
+                    global.facing = 1
+            }
+        }
+        
+        if left{
+            if (movement == 1)
+            {
+                turned = 1
+                if (xprevious == (x + charspd))
+                    x -= (charspd - 1)
+                else
+                    x -= charspd
+                if (moving != true)
+                    image_index = 1
+                moving = true
+                
+                image_speed = 0.2
+                if (up && global.facing == 2)
+                    turned = 0
+                if (down && global.facing == 0)
+                    turned = 0
+                if (turned == 1)
+                    global.facing = 2
+                
+            }
+        }
+        
+        if right{
+            if (movement == 1)
+            {
+                if (left == 0)
+                {
+                    turned = 1
+                    if (xprevious == (x - charspd))
+                        x += (charspd - 1)
+                    else
+                        x += charspd
+                    moving = true
+                    image_speed = 0.2
+                    if (moving != true)
+                        image_index = 1
+                    if (up && global.facing == 1)
+                        turned = 0
+                    if (down && global.facing == 0)
+                        turned = 0
+                    if (turned == 1)
+                        global.facing = 3
+                }
+            }
+        }
+}
+
+/// Begin Step
+down = 0
+up = 0
+left = 0
+right = 0
+if keyboard_check(vk_down)
+    try_down = 1
+if keyboard_check(vk_up)
+    try_up = 1
+if keyboard_check(vk_left)
+    try_left = 1
+if keyboard_check(vk_right)
+    try_right = 1
+if keyboard_check_released(vk_down){
+    try_down = 0
+    down = 0
+}
+if keyboard_check_released(vk_up){
+    try_up = 0
+    up = 0
+}
+if keyboard_check_released(vk_left){
+    try_left = 0
+    left = 0
+}
+if keyboard_check_released(vk_right){
+    try_right = 0
+    right = 0
+}
+if try_down
+    down = 1
+if try_up
+    up = 1
+if try_left
+    left = 1
+if try_right
+    right = 1
+
+/// End Step
+if left = 0 {
+    if right = 0 {
+        if down = 0{
+            if up = 0{
+                moving = false
+            }
+        }
+    }
+}
+if (abs(xprevious - x) > 0.01 || abs(yprevious - y) > 0.01){
+    moving = true
+}
+if global.interact = 0 && moving = true {
+    encounter += 1
+}
+if moving = false{
+    image_speed = 0
+    image_index = 0
+}
+if global.interact > 0{
+    moving = false
+    movement = 0
+}else{
+    movement = 1
+}
+
+/// collision with obj_solidparent
+if (global.phasing == 0)
+{
+    x = xprevious
+    y = yprevious
+    if (global.interact == 0)
+    {
+        if up
+        {
+            if (collision_rectangle((x + 2), (y + 15), (x + 18), (y + 19), obj_solidparent, 0, 1) > 0)
+            {
+                if (left && collision_line((bbox_left - 3), bbox_top, bbox_left, bbox_top, obj_solidparent, false, true) < 0)
+                {
+                    x -= 3
+                    global.facing = 2
+                }
+                if (right && collision_line((bbox_right + 3), bbox_top, bbox_right, bbox_top, obj_solidparent, false, true) < 0)
+                {
+                    x += 3
+                    global.facing = 3
+                }
+            }
+            else
+            {
+                y -= 3
+                global.facing = 1
+            }
+        }
+        if down
+        {
+            if (collision_rectangle((x + 2), (y + 30), (x + 18), (y + 33), obj_solidparent, 0, 1) > 0)
+            {
+                if (left && collision_line((bbox_left - 3), bbox_bottom, bbox_left, bbox_bottom, obj_solidparent, false, true) < 0)
+                {
+                    x -= 3
+                    global.facing = 2
+                }
+                if (right && collision_line((bbox_right + 3), bbox_bottom, bbox_right, bbox_bottom, obj_solidparent, false, true) < 0)
+                {
+                    x += 3
+                    global.facing = 3
+                }
+            }
+            else
+            {
+                y += 3
+                global.facing = 0
+            }
+        }
+    }
+    moving = false
+}
